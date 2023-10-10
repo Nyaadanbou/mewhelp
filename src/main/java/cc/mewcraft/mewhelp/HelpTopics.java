@@ -1,19 +1,23 @@
 package cc.mewcraft.mewhelp;
 
-import cc.mewcraft.mewhelp.object.HelpTopic;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.*;
+public class HelpTopics {
 
-public class TopicManager {
-
-    private final MewHelp plugin;
+    private final MewHelpPlugin plugin;
     private final Map<String, HelpTopic> topicMap;
 
-    public TopicManager(MewHelp plugin) {
+    public HelpTopics(MewHelpPlugin plugin) {
         this.plugin = plugin;
         this.topicMap = new HashMap<>();
+        this.loadConfig();
     }
 
     public void loadConfig() {
@@ -27,12 +31,12 @@ public class TopicManager {
                 topicMap.put(key, topic);
             }
             plugin.getComponentLogger().info(
-                plugin.getLanguages().of("msg_loaded_topics").replace("amount", topicMap.size()).component()
+                    plugin.translations().of("msg_loaded_topics").replace("amount", topicMap.size()).component()
             );
         });
     }
 
-    public @NonNull Collection<String> allTopics() {
+    public @NonNull Collection<String> topics() {
         return topicMap.keySet();
     }
 

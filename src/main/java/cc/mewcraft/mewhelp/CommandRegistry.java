@@ -1,6 +1,5 @@
-package cc.mewcraft.mewhelp.command;
+package cc.mewcraft.mewhelp;
 
-import cc.mewcraft.mewhelp.MewHelp;
 import cloud.commandframework.Command;
 import cloud.commandframework.arguments.StaticArgument;
 import cloud.commandframework.brigadier.CloudBrigadierManager;
@@ -28,12 +27,12 @@ public class CommandRegistry extends PaperCommandManager<CommandSender> implemen
 
     private final List<Command<CommandSender>> preparedCommands;
 
-    public CommandRegistry(MewHelp plugin) throws Exception {
+    public CommandRegistry(MewHelpPlugin plugin) throws Exception {
         super(
-            plugin,
-            CommandExecutionCoordinator.simpleCoordinator(),
-            Function.identity(),
-            Function.identity()
+                plugin,
+                CommandExecutionCoordinator.simpleCoordinator(),
+                Function.identity(),
+                Function.identity()
         );
 
         this.preparedCommands = new ArrayList<>();
@@ -50,29 +49,29 @@ public class CommandRegistry extends PaperCommandManager<CommandSender> implemen
 
         // ---- Setup exception messages ----
         new MinecraftExceptionHandler<CommandSender>()
-            .withDefaultHandlers()
-            .withHandler(MinecraftExceptionHandler.ExceptionType.INVALID_SYNTAX, e -> {
-                final InvalidSyntaxException exception = (InvalidSyntaxException) e;
-                final Component correctSyntaxMessage = Component
-                    .text("/%s".formatted(exception.getCorrectSyntax()))
-                    .color(NamedTextColor.GRAY)
-                    .replaceText(config -> {
-                        config.match(SYNTAX_HIGHLIGHT_PATTERN);
-                        config.replacement(builder -> builder.color(NamedTextColor.WHITE));
-                    });
-                return plugin.getLanguages()
-                    .of("err_invalid_syntax")
-                    .resolver(Placeholder.component("syntax", correctSyntaxMessage))
-                    .component();
-            })
-            .withHandler(MinecraftExceptionHandler.ExceptionType.ARGUMENT_PARSING, e -> {
-                final ArgumentParseException exception = (ArgumentParseException) e;
-                return plugin.getLanguages()
-                    .of("err_argument_parsing")
-                    .resolver(Placeholder.component("args", getMessage(exception.getCause())))
-                    .component();
-            })
-            .apply(this, AudienceProvider.nativeAudience());
+                .withDefaultHandlers()
+                .withHandler(MinecraftExceptionHandler.ExceptionType.INVALID_SYNTAX, e -> {
+                    final InvalidSyntaxException exception = (InvalidSyntaxException) e;
+                    final Component correctSyntaxMessage = Component
+                            .text("/%s".formatted(exception.getCorrectSyntax()))
+                            .color(NamedTextColor.GRAY)
+                            .replaceText(config -> {
+                                config.match(SYNTAX_HIGHLIGHT_PATTERN);
+                                config.replacement(builder -> builder.color(NamedTextColor.WHITE));
+                            });
+                    return plugin.translations()
+                            .of("err_invalid_syntax")
+                            .resolver(Placeholder.component("syntax", correctSyntaxMessage))
+                            .component();
+                })
+                .withHandler(MinecraftExceptionHandler.ExceptionType.ARGUMENT_PARSING, e -> {
+                    final ArgumentParseException exception = (ArgumentParseException) e;
+                    return plugin.translations()
+                            .of("err_argument_parsing")
+                            .resolver(Placeholder.component("args", getMessage(exception.getCause())))
+                            .component();
+                })
+                .apply(this, AudienceProvider.nativeAudience());
     }
 
     public final void prepareCommand(final Command<CommandSender> command) {
